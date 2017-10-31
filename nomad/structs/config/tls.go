@@ -1,5 +1,10 @@
 package config
 
+import (
+	"crypto/tls"
+	"fmt"
+)
+
 // TLSConfig provides TLS related configuration
 type TLSConfig struct {
 
@@ -25,12 +30,32 @@ type TLSConfig struct {
 	// Must be provided to serve TLS connections.
 	CertFile string `mapstructure:"cert_file"`
 
+	KeyLoader *KeyLoader
+
 	// KeyFile is used to provide a TLS key that is used for serving TLS connections.
 	// Must be provided to serve TLS connections.
 	KeyFile string `mapstructure:"key_file"`
 
 	// Verify connections to the HTTPS API
 	VerifyHTTPSClient bool `mapstructure:"verify_https_client"`
+}
+
+type KeyLoader struct {
+	Certificate *tls.Certificate
+}
+
+func (k *KeyLoader) LoadKeyPair(certFile, keyFile string) (*tls.Certificate, error) {
+	cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to load cert/key pair: %v", err)
+	}
+
+	k.Certificate = &cert
+	return k.Certificate, nil
+}
+
+func (k *KeyLoader) GetOutgoingCertificate(*tls.ClientHelloInfo) (*tls.Certificate, error) {
+	return k.Certificate, nil
 }
 
 // Merge is used to merge two TLS configs together

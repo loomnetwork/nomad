@@ -428,6 +428,7 @@ func TestClient_MixedTLS(t *testing.T) {
 			CAFile:               cafile,
 			CertFile:             foocert,
 			KeyFile:              fookey,
+			KeyLoader:            &nconfig.KeyLoader{},
 		}
 	})
 	defer s1.Shutdown()
@@ -478,6 +479,7 @@ func TestClient_BadTLS(t *testing.T) {
 			CAFile:               cafile,
 			CertFile:             foocert,
 			KeyFile:              fookey,
+			KeyLoader:            &nconfig.KeyLoader{},
 		}
 	})
 	defer s1.Shutdown()
@@ -492,6 +494,7 @@ func TestClient_BadTLS(t *testing.T) {
 			CAFile:               badca,
 			CertFile:             badcert,
 			KeyFile:              badkey,
+			KeyLoader:            &nconfig.KeyLoader{},
 		}
 	})
 	defer c1.Shutdown()
